@@ -1,0 +1,19 @@
+api1:
+  build: ./api1
+  volumes:
+    - ./api1:/usr/src/app
+  environment:
+    RACK_ENV: development
+  working_dir: /usr/src/app
+
+top:
+  build: ./top
+  ports:
+    - 3000:3000
+  links:
+    - api1
+  volumes:
+    - ./top:/usr/src/app
+  environment:
+    RACK_ENV: development
+  working_dir: /usr/src/app
