@@ -1,19 +1,50 @@
-api1:
-  build: ./api1
-  volumes:
-    - ./api1:/usr/src/app
-  environment:
-    RACK_ENV: development
-  working_dir: /usr/src/app
+version: "2"
+services:
+  api1:
+    build: ./api1
+    volumes:
+      - ./api1:/usr/src/app
+    environment:
+      RACK_ENV: development
+    working_dir: /usr/src/app
 
-top:
-  build: ./top
-  ports:
-    - 3000:3000
-  links:
-    - api1
-  volumes:
-    - ./top:/usr/src/app
-  environment:
-    RACK_ENV: development
-  working_dir: /usr/src/app
+  kong-database:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: kong
+      POSTGRES_DB: kong
+
+  kong:
+    image: mashape/kong
+    links:
+      - api1
+      - kong-database
+    environment:
+      DATABASE: postgres
+    ports:
+      - 3000:3000
+      - 8000:8000
+      - 8443:8443
+      - 8001:8001
+      - 7946:7946
+      - 7946:7946/udp
+    security_opt:
+      - label:seccomp:unconfined
+    depends_on:
+      - kong-database
+
+  top:
+    build: ./top
+    ports:
+      - 80:3000
+    links:
+      - api1
+      - kong
+    volumes:
+      - ./top:/usr/src/app
+    environment:
+      RACK_ENV: development
+    working_dir: /usr/src/app
+    depends_on:
+      - api1
+      - kong

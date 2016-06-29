@@ -1,5 +1,5 @@
 class MembersController < ApplicationController
-  BASE_API_URL = 'http://api1:3000/members/'.freeze
+  BASE_API_URL = 'http://kong:8000/api1/members/'.freeze
 
   def lists
     BASE_API_URL
