@@ -39,4 +39,6 @@ Rails.application.configure do
 
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
+
+  config.session_store :redis_store, servers: 'redis://session_db:6379/0', expire_in: 1.day
 end

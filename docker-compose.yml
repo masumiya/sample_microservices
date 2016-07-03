@@ -1,18 +1,36 @@
 version: "2"
 services:
-  api1:
-    build: ./api1
-    volumes:
-      - ./api1:/usr/src/app
+  rdb:
+    build: ./postgres
     environment:
-      RACK_ENV: development
-    working_dir: /usr/src/app
+      POSTGRES_USER: sample_root
+      POSTGRES_PASSWORD: sample_pass
+
+  session_db:
+    image: redis:latest
 
   kong-database:
     image: postgres:latest
     environment:
       POSTGRES_USER: kong
       POSTGRES_DB: kong
+
+  api1:
+    build: ./api1
+    links:
+      - rdb
+      - session_db
+    volumes:
+      - ./api1:/usr/src/app
+    environment:
+      RACK_ENV: development
+      DB_USER: api1_user
+      DB_PASS: api1_pass
+      DB_NAME: api1_db
+    working_dir: /usr/src/app
+    depends_on:
+      - rdb
+      - session_db
 
   kong:
     image: mashape/kong
@@ -31,8 +49,9 @@ services:
     security_opt:
       - label:seccomp:unconfined
     depends_on:
+      - api1
       - kong-database
-
+ 
   top:
     build: ./top
     ports:
@@ -40,6 +59,7 @@ services:
     links:
       - api1
       - kong
+      - session_db
     volumes:
       - ./top:/usr/src/app
     environment:
@@ -48,3 +68,4 @@ services:
     depends_on:
       - api1
       - kong
+      - session_db
