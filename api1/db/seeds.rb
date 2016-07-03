@@ -7,7 +7,7 @@
 #   Character.create(name: 'Luke', movie: movies.first)
 
 Member.delete_all
-Member.create(name: 'Person1', age: 20)
+Member.create(name: 'ユーザー1', age: 20)
 Member.create(name: 'Person2', age: 25)
 Member.create(name: 'Person3', age: 30)
 Member.create(name: 'Person4', age: 35)
