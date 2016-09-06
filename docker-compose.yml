@@ -38,7 +38,8 @@ services:
       - api1
       - kong-database
     environment:
-      DATABASE: postgres
+      KONG_LOG_LEVEL: info
+      KONG_PG_HOST: kong-database
     ports:
       - 3000:3000
       - 8000:8000
